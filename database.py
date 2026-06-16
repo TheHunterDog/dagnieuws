@@ -10,6 +10,28 @@ class Database:
         self.__create_tables__()
         pass
 
+    def __connect_performance_database__(self):
+        return sqlite3.connect("performance.db")
+
+    def store_performance_delta(self, delta: datetime.timedelta):
+        self.__create_performance_table__()
+        conn = self.__connect_performance_database__()
+        cursor = conn.cursor()
+        cursor.execute("""INSERT INTO performance
+                       (delta) VALUES (?)""", (delta,)
+        )
+        conn.commit()
+        conn.close()
+
+    def __create_performance_table__(self):
+        conn = self.__connect_performance_database__()
+        cursor = conn.cursor()
+        cursor.execute("""CREATE TABLE IF NOT EXISTS performance (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            delta TEXT,
+            Created DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+            """)
     def store_document(self, document):
         self.__insert_document_if_not_exists__(document)
 

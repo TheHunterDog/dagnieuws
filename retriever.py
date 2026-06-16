@@ -20,6 +20,6 @@ class Retriever:
             query_embedding = model.encode(query).tolist()
         else:
             raise Exception("No query or queries provided")
-        results = collection.query(query_embeddings=query_embedding, n_results=5)
+        results = collection.query(query_embeddings=query_embedding, n_results=8)
 
         return results
