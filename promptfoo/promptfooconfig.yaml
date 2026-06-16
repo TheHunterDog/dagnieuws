@@ -1,0 +1,62 @@
+description: WarmteWijs support agent — system prompt contract
+
+prompts:
+  - file://prompt.yaml
+
+providers:
+  - id: ollama:chat:qwen3:8b
+    config:
+      options:
+        temperature: 0
+  - id: ollama:chat:qwen3:4b
+    config:
+      options:
+        temperature: 0
+  - id: ollama:chat:gemma4
+    config:
+      options:
+        temperature: 0
+  - id: ollama:chat:qwen3.5
+    config:
+      options:
+        temperature: 0
+  - id: ollama:chat:lfm2.5
+    config:
+      options:
+        temperature: 0
+  - id: ollama:chat:llama3.1
+    config:
+      options:
+        temperature: 0
+
+defaultTest:
+  options:
+    provider:
+      text:
+        id: ollama:chat:qwen3:14b
+        config:
+          options:
+            temperature: 0      # a judge that flips verdicts between runs is useless
+      embedding:
+        id: ollama:embeddings:nomic-embed-text
+  assert:
+    # max 40 woorden
+    - type: javascript
+      value: 'output.trim().split(/\s+/).length <= 140'
+    # geen markdown
+    - type: not-regex
+      value: '```|\*\*|__|~~|\[.*?\]\(.*?\)'
+
+tests:
+  - description: "Artikel 01"
+    vars:
+      input: "Curl gaat opnieuw een maand stoppen met zijn bugbountyprogramma. De makers van de tool namen eerder dit jaar al tijdelijk geen kwetsbaarheidsrapportages aan vanwege het grote aantal AI-gegenereerde berichten. Later ging het programma in beperkte vorm weer van start. Door deze zomerstop verschijnt de nieuwe versie van curl ook pas later."
+  - description: "Artikel 02"
+    vars:
+      input: "Achtervolgingen komen wel vaker voor. Maar bij de jongen die de Zoetermeerse politie afgelopen week in het vizier had, was het vrij uitzonderlijk. Geen opgevoerde fatbike of te hard rijdende automobilist die de wegen onveilig maakte, maar een zelf in elkaar geknutselde elektrische mountainbike. Een 15-jarige jongen scheurde daarmee met ruim 100 kilometer per uur door de straten."
+  - description: "Artikel 03"
+    vars:
+      input: "Welmoed Sijtsma stapt na de zomer over van Omroep WNL naar RTL en krijgt begin 2027 haar eigen talkshow op RTL 4. Daarmee wordt de presentatrice naast Renze Klamer een van de vaste gezichten van de late avond."
+  - description: "Artikel 04"
+    vars:
+      input: "Nick Cave bracht Best Kept Secret in trance met een intens optreden. Het festival in Hilvarenbeek beleefde een sterke editie die zich moeilijk lieten vastpinnen."
