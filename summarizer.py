@@ -23,6 +23,8 @@ class Summarizer:
     - De samenvatting moet de belangrijkste punten van het artikel bevatten, maar mag niet te gedetailleerd zijn. Het doel is om een beknopte en informatieve samenvatting te bieden die de kern van het artikel weergeeft zonder overbodige details.
     
     mocht de samenvatting niet aan deze regels voldoen, geef dan een foutmelding terug in plaats van een samenvatting.
+    
+    Voeg aan het einde een sectie toe genaamd 'WAAROM' met één zin die uitlegt waarom dit belangrijk is voor de lezer
         """
         pass
 
@@ -40,9 +42,10 @@ class Summarizer:
             },
         ])
 
-    def summarize_using_ollama(self, text):
+    def summarize_with_relevance(self, text):
+        llm_helper = LlmHelper()
 
-        response: ChatResponse = chat(model='gemma4:e4b', messages=[
+        return llm_helper.get_response_with_ollama([
             {
                 'role': 'system',
                 'content': self.prompt
@@ -52,4 +55,3 @@ class Summarizer:
                 'content': text,
             },
         ])
-        return response.message.content

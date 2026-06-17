@@ -3,6 +3,9 @@ import json
 import re
 from typing import List
 
+import requests
+from dateutil import parser
+from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
 
 from news_source import NewsSource
@@ -10,20 +13,31 @@ from summarizer import Summarizer
 
 _CDATA_RE = re.compile(r"<!\[CDATA\[(.*?)\]\]>", re.DOTALL)
 class Document:
-    def __init__(self, id=None, source=None, title=None, description=None, url=None, guid=None, pub_date=None, media_url=None, hash=None, created=None, summary=None, summarized_text=None):
+    def __init__(self, id=None, source=None, title=None, description=None, url=None, guid=None, pub_date=None, media_url=None, hash=None, created=None, summarized_text=None, summary=None, cluster_id=None, full_text=None, fetch_status=None):
         self.title:str = title
         self.description: str = description
         self.url: str = url
         self.pub_date: str = pub_date
         self.guid: str = guid
         self.media_url: str = media_url
-        self.source: NewsSource = source
+        self.source: NewsSource | str = source
         self.id: str = id
         self.hash: str = hash
         self.created: str = created
         self.summarized_text: str = summarized_text # This is always created by us
         self.summary: str = summary # This is always created by the publisher
+        self.cluster_id: int = cluster_id
+        self.full_text: str = full_text
+        self.fetch_status: str = fetch_status
 
+    def get_source_name(self) -> str:
+        if isinstance(self.source, NewsSource):
+            source_name = self.source.name
+        elif isinstance(self.source, str):
+            source_name = self.source
+        else:
+            source_name = "Unknown"
+        return source_name
 
     def convert_from_document(self, document_item):
         soup = BeautifulSoup(document_item, 'html.parser')
@@ -39,7 +53,33 @@ class Document:
         print(self.pub_date)
         return self
 
-
+    def fetch_full_text(self):
+        if not self.url:
+            self.fetch_status = "skipped"
+            return
+        
+        try:
+            headers = {'User-Agent': 'dagNieuws/1.0'}
+            response = requests.get(self.url, headers=headers, timeout=10)
+            response.raise_for_status()
+            
+            soup = BeautifulSoup(response.text, 'html.parser')
+            # Remove script and style elements
+            for script in soup(["script", "style"]):
+                script.decompose()
+            
+            # Simple heuristic: find all p tags and join them
+            paragraphs = soup.find_all('p')
+            text = "\n\n".join([p.get_text().strip() for p in paragraphs if p.get_text().strip()])
+            
+            if text:
+                self.full_text = text
+                self.fetch_status = "ok"
+            else:
+                self.fetch_status = "failed"
+        except Exception as e:
+            print(f"Error fetching {self.url}: {e}")
+            self.fetch_status = "failed"
     def summarize(self):
         # Some articles are already summarized by the publisher
         if self.summary:

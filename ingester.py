@@ -1,17 +1,18 @@
+from datetime import datetime
 from pathlib import Path
-
 import chromadb.errors
 import torch
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-
 from chroma_helper import ChromaHelper
 from database import Database
 from app_logging import Logging
 from model_helper import ModelHelper
+from news_source import NewsSource
 
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 200
 EMBEDDING_MODEL_NAME = "BAAI/bge-m3"
+ARTICLES_COLLECTION_NAME = "articles"
 
 class Ingester:
     def __init__(self):
@@ -38,25 +39,13 @@ class Ingester:
 
         self.model = None
 
-    def __select_best_torch_device__(self):
-        self.logging.info("Selecting best torch device...")
-        if torch.cuda.is_available():
-            self.logging.info("CUDA is available, using it.")
-            return "cuda"
-        elif torch.backends.mps.is_available():
-            self.logging.info("MPS is available, using it.")
-            return "mps"
-        else:
-            self.logging.info("CUDA and MPS are not available, using CPU.")
-            return "cpu"
-
-    def ingest_articles(self):
+    def ingest_articles(self, date_from: datetime, date_to: datetime):
         ingested_articles = 0
         articles_skipped = 0
         # assuming the responses folder
 
         database = Database()
-        documents = database.get_documents_filtered_by_dates()
+        documents = database.get_documents_filtered_by_dates(date_from, date_to)
         modelHelper = ModelHelper()
         model = modelHelper.__load_model__()
         chromaHelper = ChromaHelper(modelHelper.get_model_name())
@@ -65,18 +54,20 @@ class Ingester:
 
         for document in documents:
             try:
-                if(document.description is None or document.description.strip() == ""):
+                content = document.full_text if document.full_text else document.description
+                if not content or content.strip() == "":
                     articles_skipped+=1
                     continue
                 self.logging.info(
                     f"Ingesting article {document.id} from {document.source} with pubdate {document.pub_date}..."
                 )
-                embedding = model.encode(document.description)
+                embedding = model.encode(content)
                 database_id = str(document.id)
+                source_name = document.get_source_name()
                 collection.add(
-                    documents=[document.description],
+                    documents=[content],
                     metadatas=[{
-                        "source": self.__get_str_or_empty__(document.source) if type(document.source) == str else document.source.name,
+                        "source": self.__get_str_or_empty__(source_name),
                         "pubdate": self.__get_str_or_empty__(document.pub_date),
                         "url": self.__get_str_or_empty__(document.url),
                         "guid": self.__get_str_or_empty__(document.guid),
@@ -103,9 +94,8 @@ class Ingester:
         chromaHelper = ChromaHelper(self.embedding_model_name)
         chroma = chromaHelper.__load_chroma_client__()
         try:
-            if not chroma.get_collection("articles"):
-                return
-        except chromadb.errors.NotFoundError:
-            return
-        chroma.delete_collection("articles")
+            chroma.delete_collection(ARTICLES_COLLECTION_NAME)
+            self.logging.info(f"Deleted collection {ARTICLES_COLLECTION_NAME}")
+        except Exception as e:
+            self.logging.info(f"Could not delete collection {ARTICLES_COLLECTION_NAME} (might not exist): {e}")
         chromaHelper.__unload_chroma_client__()

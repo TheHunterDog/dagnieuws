@@ -1,0 +1,21 @@
+topics:
+  - name: AI-regelgeving
+    phrasings: ["Europese AI-wet", "toezicht op algoritmes", "AI Act", "artificiële intelligentie regelgeving"]
+  - name: Nederlandse spoorwegen
+    phrasings: ["ProRail storing", "NS dienstregeling", "spoorwerk", "treinverkeer"]
+  - name: Woningmarkt
+    phrasings: ["huizenprijzen", "woningtekort", "hypotheekrente", "nieuwbouw projecten"]
+  - name: Klimaatbeleid
+    phrasings: ["stikstofcrisis", "energietransitie", "CO2-uitstoot", "duurzaamheid"]
+  - name: Politieke formatie
+    phrasings: ["kabinetsonderhandelingen", "regeerakkoord", "nieuwe ministers", "Den Haag politiek"]
+  - name: Financiële markten
+    phrasings: ["beursgang", "AEX index", "inflatiecijfers", "ECB rentebeleid"]
+  - name: Cybersecurity
+    phrasings: ["datalek", "ransomware aanval", "online veiligheid", "hackers"]
+  - name: Gezondheidszorg
+    phrasings: ["zorgverzekering", "ziekenhuizen capaciteit", "medische innovatie", "huisartsen"]
+  - name: Technologie
+    phrasings: ["internet van dingen", "smart city", "AI-technologie", "robotica"]
+  - name: Wetenschap
+    phrasings: ["wetenschapperij", "wetenschapperschap", "wetenschappelijk onderzoek", "wetenschappelijk onderzoek"]
