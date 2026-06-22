@@ -1,20 +1,21 @@
+from pathlib import Path
+
 from chroma_helper import ChromaHelper
-from model_helper import ModelHelper
+from embeddings_model_helper import EmbeddingsModelHelper
 
 
 class Retriever:
-    def __init__(self):
-        # Chroma uses L2 distance by default: lower = more similar.
-        # A hit is kept only if it is at least this close to a subject query.
+    def __init__(self, embedding_model_name: str, db_path: Path=None):
         self.threshold = 1.7
+        self.db_path = db_path
+        self.embeddingsModelHelper = EmbeddingsModelHelper(embedding_model_name)
 
     def retrieve(self, query: str = None, queries: list[str] = None, top_n: int = 8):
-        modelHelper = ModelHelper()
-        chromaHelper = ChromaHelper(modelHelper.get_model_name())
+        chromaHelper = ChromaHelper(self.embeddingsModelHelper.get_model_name(), db_path=self.db_path)
 
         chroma = chromaHelper.__load_chroma_client__()
         collection = chroma.get_or_create_collection("articles")
-        model = modelHelper.__load_model__()
+        model = self.embeddingsModelHelper.__load_model__()
 
         if queries is not None:
             query_embeddings = model.encode(queries).tolist()

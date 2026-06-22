@@ -3,12 +3,12 @@ from sklearn.cluster import AgglomerativeClustering
 from sklearn.preprocessing import normalize
 
 from database import Database
-from model_helper import ModelHelper
+from embeddings_model_helper import EmbeddingsModelHelper
 
 
 class Clustering:
-    def __init__(self):
-        pass
+    def __init__(self, embedding_model_name: str):
+        self.embedding_model_name = embedding_model_name
 
     def cluster_documents(self):
         database = Database()
@@ -20,7 +20,7 @@ class Clustering:
         embeddings = []
         article_ids = []
 
-        modelhelper = ModelHelper()
+        modelhelper = EmbeddingsModelHelper(embedding_model_name=self.embedding_model_name)
         model = modelhelper.__load_model__()
 
         for document in documents:

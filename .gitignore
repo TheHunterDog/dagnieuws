@@ -5,3 +5,5 @@ log.txt
 /dbs
 /ops
 *.db
+/eval/__pycache__
+/eval/dbs

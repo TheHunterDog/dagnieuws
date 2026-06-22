@@ -8,7 +8,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 class LlmHelper:
     def __init__(self):
         self.llm_name = "Qwen/Qwen3-4B"
-        self.ollama_model_name = "gemma4:e4b"
+        self.ollama_model_name = "qwen3:8b"
         self.tokenizer = None
         self.model = None
 

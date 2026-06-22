@@ -6,18 +6,19 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from chroma_helper import ChromaHelper
 from database import Database
 from app_logging import Logging
-from model_helper import ModelHelper
+from document import Document
+from embeddings_model_helper import EmbeddingsModelHelper
 from news_source import NewsSource
 
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 200
-EMBEDDING_MODEL_NAME = "BAAI/bge-m3"
 ARTICLES_COLLECTION_NAME = "articles"
 
 class Ingester:
-    def __init__(self):
+    def __init__(self, embedding_model_name: str, db_path: Path = None):
         self.logging = Logging(write_to_file=True, source="Ingester", verbosity=5)
-        self.embedding_model_name = EMBEDDING_MODEL_NAME
+        self.db_path = db_path
+        self.embeddingsModelHelper = EmbeddingsModelHelper(embedding_model_name)
 
         self.splitter = RecursiveCharacterTextSplitter(
             chunk_size=CHUNK_SIZE,
@@ -40,17 +41,20 @@ class Ingester:
         self.model = None
 
     def ingest_articles(self, date_from: datetime, date_to: datetime):
-        ingested_articles = 0
-        articles_skipped = 0
-        # assuming the responses folder
-
         database = Database()
         documents = database.get_documents_filtered_by_dates(date_from, date_to)
-        modelHelper = ModelHelper()
-        model = modelHelper.__load_model__()
-        chromaHelper = ChromaHelper(modelHelper.get_model_name())
+        self.__ingest_articles__(documents)
+
+
+
+    def __ingest_articles__(self, documents: list[Document]):
+        ingested_articles = 0
+        articles_skipped = 0
+
+        model = self.embeddingsModelHelper.__load_model__()
+        chromaHelper = ChromaHelper(self.embeddingsModelHelper.get_model_name(), db_path=self.db_path)
         chroma = chromaHelper.__load_chroma_client__()
-        collection = chroma.get_or_create_collection("articles")
+        collection = chroma.get_or_create_collection(ARTICLES_COLLECTION_NAME)
 
         for document in documents:
             try:
@@ -84,14 +88,14 @@ class Ingester:
             ingested_articles += 1
 
         print(f"Ingested {ingested_articles} articles, skipped {articles_skipped} articles")
-
         chromaHelper.__unload_chroma_client__()
-        modelHelper.__unload_model__()
+        self.embeddingsModelHelper.__unload_model__()
+
     def __get_str_or_empty__(self, value):
         return str(value) if value is not None else ""
 
     def delete_articles(self):
-        chromaHelper = ChromaHelper(self.embedding_model_name)
+        chromaHelper = ChromaHelper(self.embeddingsModelHelper.embedding_model_name, db_path=self.db_path)
         chroma = chromaHelper.__load_chroma_client__()
         try:
             chroma.delete_collection(ARTICLES_COLLECTION_NAME)

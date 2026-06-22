@@ -4,12 +4,12 @@ from sentence_transformers import SentenceTransformer
 from app_logging import Logging
 
 
-class ModelHelper:
+class EmbeddingsModelHelper:
     logging = Logging(True, "ModelHelper")
 
-    def __init__(self):
+    def __init__(self, embedding_model_name: str):
         self.model = None
-        self.embedding_model_name = "all-MiniLM-L6-v2"
+        self.embedding_model_name = embedding_model_name
 
     def __load_model__(self):
         if self.model is None:
