@@ -345,7 +345,7 @@ def recall_test(embedding_model_name: str):
 
 
 if __name__ == "__main__":
-    amount_of_runs = 10
+    amount_of_runs = 1
 
     for run in range(amount_of_runs):
         # Fresh CSV headers each run

@@ -13,7 +13,7 @@ from retriever import Retriever
 from summarizer import Summarizer
 
 def run_pipeline(date_str=None):
-    embeddings_model_name = "all-MiniLM-L6-v2"
+    embeddings_model_name = "BAAI/bge-m3"
 
     # Stage 1: Resolve target date
     tz = ZoneInfo("Europe/Amsterdam")

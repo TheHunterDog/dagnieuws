@@ -1,1 +1,13 @@
 date,mean recall,recall scores,model
+2026-06-26 00:00:05.967913,0.9,"[1, 1, 0, 1, 1, 1, 1, 1, 1, 1]",sentence-transformers/all-MiniLM-L6-v2
+2026-06-26 00:00:12.279305,0.9,"[1, 1, 0, 1, 1, 1, 1, 1, 1, 1]",sentence-transformers/all-MiniLM-L6-v2 (HyDE)
+2026-06-26 00:00:22.796643,1.0,"[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",sentence-transformers/all-mpnet-base-v2
+2026-06-26 00:00:30.085045,0.9,"[1, 1, 1, 1, 1, 1, 1, 1, 1, 0]",sentence-transformers/all-mpnet-base-v2 (HyDE)
+2026-06-26 00:00:41.122832,0.9,"[1, 1, 1, 1, 1, 0, 1, 1, 1, 1]",sentence-transformers/all-distilroberta-v1
+2026-06-26 00:00:48.056469,1.0,"[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",sentence-transformers/all-distilroberta-v1 (HyDE)
+2026-06-26 00:01:06.591567,1.0,"[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",BAAI/bge-m3
+2026-06-26 00:01:24.564196,1.0,"[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",BAAI/bge-m3 (HyDE)
+2026-06-26 00:01:44.956449,1.0,"[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",intfloat/multilingual-e5-small
+2026-06-26 00:01:55.832807,1.0,"[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",intfloat/multilingual-e5-small (HyDE)
+2026-06-26 00:02:12.647076,1.0,"[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",intfloat/multilingual-e5-base
+2026-06-26 00:02:24.263196,1.0,"[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",intfloat/multilingual-e5-base (HyDE)
